@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from app.forms import LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User
+from app.models import User, Role
 from werkzeug.urls import url_parse
 
 
@@ -15,11 +15,24 @@ def index():
 def courses():
     return render_template('courses.html', title='Your Courses')
 
-@app.route('/admin', methods=['GET'])
+@app.route('/admin', methods=['GET', 'POST'])
 @login_required
 def admin():
+    usereditform = UserEditForm()
+    if usereditform.validate_on_submit():
+        u = User.query.filter(User.id == usereditform.userid.data).one()
+        if usereditform.admin.data == True and not u.is_admin():
+            u.roles.append(Role.query.filter(Role.name == 'admin').one())
+        if usereditform.admin.data == False and u.is_admin():
+            u.roles.remove(Role.query.filter(Role.name == 'admin').one())
+        if usereditform.student.data == True and not u.is_student():
+            u.roles.append(Role.query.filter(Role.name == 'student').one())
+        if usereditform.student.data == False and u.is_admin():
+            u.roles.remove(Role.query.filter(Role.name == 'student').one())
+        db.session.add(u)
+        db.session.commit()
     users = User.query.all()
-    return render_template('admin.html', usereditform=UserEditForm(), users=users, title='Admin Page')
+    return render_template('admin.html', usereditform=usereditform, users=users, title='Admin Page')
 
 @app.route('/logout')
 def logout():

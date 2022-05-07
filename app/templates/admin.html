@@ -10,11 +10,13 @@
       <td>{{user.username}}</td>
       <td>
   <form action="" method="post">
-    {{ usereditform.hidden_tag() }}
-      {{usereditform.userid(value=user.id)}}
-      {{ usereditform.roles.label }}
-      {{ usereditform.roles }}
-    {{ usereditform.submit() }}
+      {{ usereditform.csrf_token }}
+      {{ usereditform.userid(value=user.id) }}
+      {{ usereditform.student.label }}
+      {{ usereditform.student(checked=user.is_student()) }}
+      {{ usereditform.admin.label }}
+      {{ usereditform.admin(checked=user.is_admin()) }}
+      {{ usereditform.submit() }}
     </form></td>
     </tr>
   {%for course in user.courses%}

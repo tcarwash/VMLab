@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, HiddenField, SelectMultipleField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, SelectField, HiddenField, SelectMultipleField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
 from app.models import User, Role
 
@@ -11,7 +11,8 @@ class LoginForm(FlaskForm):
 
 class UserEditForm(FlaskForm):
     userid = HiddenField('UserID')
-    roles = SelectMultipleField(choices=[(role.id, role.name) for role in Role.query.all()]) 
+    admin = BooleanField('Admin')
+    student = BooleanField('Student')
     submit = SubmitField('Submit')
 
 class RegistrationForm(FlaskForm):

@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import LoginForm, RegistrationForm
+from app.forms import LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User
 from werkzeug.urls import url_parse
@@ -14,6 +14,12 @@ def index():
 @login_required
 def courses():
     return render_template('courses.html', title='Your Courses')
+
+@app.route('/admin', methods=['GET'])
+@login_required
+def admin():
+    users = User.query.all()
+    return render_template('admin.html', usereditform=UserEditForm(), users=users, title='Admin Page')
 
 @app.route('/logout')
 def logout():
@@ -33,7 +39,12 @@ def login():
         login_user(user, remember=form.remember_me.data)
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
-            next_page = url_for('index')
+            if any(role.name=='admin' for role in current_user.roles):
+                next_page = url_for('admin')
+            elif any(role.name=='student' for role in current_user.roles):
+                next_page = url_for('courses')
+            else:
+                next_page = url_for('index')
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 

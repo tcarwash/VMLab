@@ -7,6 +7,7 @@ services:
     image: vmlab 
     restart: unless-stopped
     volumes:
+      - ./app/:/app/app/:ro
       - ./data/:/app/data/
     ports:
       - "8007:5000"

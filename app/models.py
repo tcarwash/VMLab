@@ -33,6 +33,12 @@ class User(UserMixin, db.Model):
     roles = db.relationship('Role', secondary=user_role)
     instances = db.relationship('Instance', secondary=user_instance)
 
+    def is_admin(self):
+        return any(role.name=='admin' for role in self.roles)
+
+    def is_student(self):
+        return any(role.name=='student' for role in self.roles)
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 

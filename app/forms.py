@@ -1,13 +1,18 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import StringField, HiddenField, SelectMultipleField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from app.models import User
+from app.models import User, Role
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     remember_me = BooleanField('Remember Me')
     submit = SubmitField('Sign In')
+
+class UserEditForm(FlaskForm):
+    userid = HiddenField('UserID')
+    roles = SelectMultipleField(choices=[(role.id, role.name) for role in Role.query.all()]) 
+    submit = SubmitField('Submit')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])

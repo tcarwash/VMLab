@@ -16,14 +16,30 @@
       {{ usereditform.student(checked=user.is_student()) }}
       {{ usereditform.admin.label }}
       {{ usereditform.admin(checked=user.is_admin()) }}
+      </td>
+      <td></td>
+      <td>
       {{ usereditform.submit() }}
     </form></td>
     </tr>
-  {%for course in user.courses%}
-   <tr class="table-row">
-      <td>{{course.name}}</td>
+  {%for course in user.assignments%}
+   <tr class="table-row table-dark">
+      <td></td>
+      <td>{{course.course_name}}</td>
+      <td>{{course.course_desc}}</td>
+      <td>{{course.course_vm}}</td>
    </tr>
    {%endfor%}
+   <tr class="table-row table-dark">
+   <form action="" method="post">
+   {{assignform.userid(value=user.id)}}
+   <td></td>
+   {{assignform.csrf_token}}
+      <td></td>
+   <td>{{assignform.course.label}}{{assignform.course()}}</td>
+   <td>{{assignform.submit()}}</td>
+   </form>
+   </tr>
     {%endfor%}
     </table>
 

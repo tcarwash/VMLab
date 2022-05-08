@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, HiddenField, SelectMultipleField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
-from app.models import User, Role
+from app.models import User, Role, Course
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
@@ -13,7 +13,12 @@ class UserEditForm(FlaskForm):
     userid = HiddenField('UserID')
     admin = BooleanField('Admin')
     student = BooleanField('Student')
-    submit = SubmitField('Submit')
+    submit = SubmitField('Submit Changes')
+
+class AssignForm(FlaskForm):
+    userid = HiddenField('UserID')
+    course = SelectField('Add Course', choices=[(course.id, course.course_name) for course in Course.query.all()], validators=[DataRequired()])
+    submit = SubmitField('Add Course')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])

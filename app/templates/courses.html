@@ -3,21 +3,7 @@
 
 {% block app_content %}
 
-    <h1>Your Courses</h1>
-    <table class="table table-hover">
-    <tr><th>Course</th></tr>
-    {%for course in current_user.assignments%}
-    <tr>
-    <td><a href={{url_for('courses')}}>{{course.course_name}}</a></td>
-    <td>{%for instance in current_user.instances%}
-    {%if instance.course_id == course.id%}
-    <h2>Active</h2>
-
-    {%endif%}
-    {%endfor%}
-    </td>
-    </tr>
-    {%endfor%}
+    <h1>This would be a list of your courses</h1>
 
 {% endblock %}
 

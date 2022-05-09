@@ -15,6 +15,11 @@ class UserEditForm(FlaskForm):
     student = BooleanField('Student')
     submit = SubmitField('Submit Changes')
 
+class DeleteAssignForm(FlaskForm):
+    userid = HiddenField("UserID")
+    course = HiddenField("CourseID")
+    delete = SubmitField("Remove Course")
+
 class AssignForm(FlaskForm):
     userid = HiddenField('UserID')
     course = SelectField('Add Course', choices=[(course.id, course.course_name) for course in Course.query.all()], validators=[DataRequired()])

@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import AssignForm, LoginForm, RegistrationForm, UserEditForm
+from app.forms import AssignForm, DeleteAssignForm, LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Role, Course
 from werkzeug.urls import url_parse
@@ -20,13 +20,20 @@ def courses():
 def admin():
     usereditform = UserEditForm()
     assignform = AssignForm()
-    if assignform.validate_on_submit():
+    deleteform = DeleteAssignForm()
+    if deleteform.validate_on_submit() and deleteform.delete.data:
+        u = User.query.filter(User.id == deleteform.userid.data).one() 
+        c = Course.query.filter(Course.id == deleteform.course.data).one()
+        u.assignments.remove(c)
+        db.session.add(u)
+        db.session.commit()
+    elif assignform.validate_on_submit() and assignform.submit.data:
         u = User.query.filter(User.id == assignform.userid.data).one() 
         c = Course.query.filter(Course.id == assignform.course.data).one()
         u.assignments.append(c)
         db.session.add(u)
         db.session.commit()
-    elif usereditform.validate_on_submit():
+    elif usereditform.validate_on_submit() and usereditform.submit.data:
         u = User.query.filter(User.id == usereditform.userid.data).one()
         if usereditform.admin.data == True and not u.is_admin():
             u.roles.append(Role.query.filter(Role.name == 'admin').one())
@@ -39,7 +46,7 @@ def admin():
         db.session.add(u)
         db.session.commit()
     users = User.query.all()
-    return render_template('admin.html', usereditform=usereditform, assignform=assignform, users=users, title='Admin Page')
+    return render_template('admin.html', usereditform=usereditform, deleteform=deleteform, assignform=assignform, users=users, title='Admin Page')
 
 @app.route('/logout')
 def logout():

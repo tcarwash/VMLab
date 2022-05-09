@@ -20,6 +20,7 @@
       <td></td>
       <td>
       {{ usereditform.submit() }}
+      <td></td>
     </form></td>
     </tr>
   {%for course in user.assignments%}
@@ -28,6 +29,12 @@
       <td>{{course.course_name}}</td>
       <td>{{course.course_desc}}</td>
       <td>{{course.course_vm}}</td>
+      <form action="" method="post"><td>
+      {{deleteform.csrf_token}}
+      {{deleteform.course(value=course.id)}}
+      {{deleteform.userid(value=user.id)}}
+      {{deleteform.delete()}}
+      </td></form>
    </tr>
    {%endfor%}
    <tr class="table-row table-dark">
@@ -37,6 +44,7 @@
    {{assignform.csrf_token}}
       <td></td>
    <td>{{assignform.course.label}}{{assignform.course()}}</td>
+      <td></td>
    <td>{{assignform.submit()}}</td>
    </form>
    </tr>

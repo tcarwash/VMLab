@@ -21,6 +21,18 @@ user_role = db.Table('user_role',
     db.Column('role', db.Integer, db.ForeignKey('Role.id'))
     )
 
+class Role(db.Model):
+    __tablename__ = 'Role'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(32), index=True, unique=True)
+    
+class VM(db.Model):
+    __tablename__ = 'VM'
+    id = db.Column(db.Integer, primary_key=True)
+    vm_name = db.Column(db.String(32), index=True, unique=True)
+    vm_desc = db.Column(db.String(120), index=True)
+    path = db.Column(db.String(64), index=True)
+
 class User(UserMixin, db.Model):
     __tablename__ = 'User'
     id = db.Column(db.Integer, primary_key=True)
@@ -48,27 +60,6 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<username {}>'.format(self.username)
 
-class Role(db.Model):
-    __tablename__ = 'Role'
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(32), index=True, unique=True)
-    
-
-class VM(db.Model):
-    __tablename__ = 'VM'
-    id = db.Column(db.Integer, primary_key=True)
-    vm_name = db.Column(db.String(32), index=True, unique=True)
-    vm_desc = db.Column(db.String(120), index=True)
-    path = db.Column(db.String(64), index=True)
-    courses = db.relationship('Course', backref='vm', lazy='dynamic')
-
-class Instance(db.Model):
-    __tablename__ = 'Instance'
-    id = db.Column(db.Integer, primary_key=True)
-    course_id = db.Column(db.Integer, db.ForeignKey('Course.id'))
-    url = db.Column(db.String(32), index=True, unique=True)
-
-
 class Course(db.Model):
     __tablename__ = 'Course'
     id = db.Column(db.Integer, primary_key=True)
@@ -80,3 +71,9 @@ class Course(db.Model):
     def __repr__(self):
         return '<Course {}>'.format(self.course_name)
 
+class Instance(db.Model):
+    __tablename__ = 'Instance'
+    id = db.Column(db.Integer, primary_key=True)
+    course_id = db.Column(db.Integer, db.ForeignKey('Course.id'))
+    url = db.Column(db.String(32), index=True, unique=True)
+    vm = db.relationship("VM", secondary=Course.__table__, primaryjoin="Instance.course_id == Course.id", secondaryjoin="Course.vm_id == VM.id")

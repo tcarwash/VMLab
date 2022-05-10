@@ -40,9 +40,9 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(32), index=True, unique=True)
     course_desc = db.Column(db.String(120), index=True, unique=True)
+    course_text = db.Column(db.String(500), index=True, unique=True)
     vm_id = db.Column(db.Integer, db.ForeignKey('VM.id'))
     users = db.relationship('User', secondary=assignment)
-    url = db.Column(db.String(32), index=True, unique=True)
 
     def __repr__(self):
         return '<Course {}>'.format(self.course_name)

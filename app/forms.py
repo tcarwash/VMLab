@@ -13,7 +13,15 @@ class UserEditForm(FlaskForm):
     userid = HiddenField('UserID')
     admin = BooleanField('Admin')
     student = BooleanField('Student')
+    teacher = BooleanField('Teacher')
     submit = SubmitField('Submit Changes')
+    
+class CourseForm(FlaskForm):
+    course_name = StringField('Course Name', validators=[DataRequired()])
+    course_desc = StringField('Descrtiption')
+    course_text = StringField('Body', validators=[DataRequired()])
+    vm = SelectField('VM')
+    submit = SubmitField('Submit')
 
 class DeleteAssignForm(FlaskForm):
     userid = HiddenField("UserID")

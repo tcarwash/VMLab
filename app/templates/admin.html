@@ -14,6 +14,8 @@
       {{ usereditform.userid(value=user.id) }}
       {{ usereditform.student.label }}
       {{ usereditform.student(checked=user.is_student()) }}
+      {{ usereditform.teacher.label }}
+      {{ usereditform.teacher(checked=user.is_teacher()) }}
       {{ usereditform.admin.label }}
       {{ usereditform.admin(checked=user.is_admin()) }}
       </td>

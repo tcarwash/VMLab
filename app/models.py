@@ -64,6 +64,9 @@ class User(UserMixin, db.Model):
 
     def is_student(self):
         return any(role.name=='student' for role in self.roles)
+        
+    def is_teacher(self):
+        return any(role.name=='teacher' for role in self.roles)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)

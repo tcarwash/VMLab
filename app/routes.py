@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import AssignForm, DeleteAssignForm, LoginForm, RegistrationForm, UserEditForm
+from app.forms import AssignForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Role, Course, VM, Instance
 from werkzeug.urls import url_parse
@@ -42,8 +42,12 @@ def admin():
             u.roles.remove(Role.query.filter(Role.name == 'admin').one())
         if usereditform.student.data == True and not u.is_student():
             u.roles.append(Role.query.filter(Role.name == 'student').one())
-        if usereditform.student.data == False and u.is_admin():
+        if usereditform.student.data == False and u.is_student():
             u.roles.remove(Role.query.filter(Role.name == 'student').one())
+        if usereditform.teacher.data == True and not u.is_teacher():
+            u.roles.append(Role.query.filter(Role.name == 'teacher').one())
+        if usereditform.teacher.data == False and u.is_teacher():
+            u.roles.remove(Role.query.filter(Role.name == 'teacher').one())
         db.session.add(u)
         db.session.commit()
     users = User.query.all()
@@ -53,6 +57,24 @@ def admin():
 def logout():
     logout_user()
     return redirect(url_for('index'))
+
+@app.route('/new-course', methods=['GET', 'POST'])
+def new_course():
+    form=CourseForm()
+    vms = [(vm.id, vm.vm_name) for vm in VM.query.all()]
+    form.vm.choices=vms
+    if form.validate_on_submit():
+        c = Course(course_name=form.course_name.data,
+                course_desc=form.course_desc.data,
+                course_text=form.course_text.data,
+                vm_id = form.vm.data
+                )
+        db.session.add(c)
+        db.session.commit()
+        flash('Course Added!')
+        return redirect(url_for('index'))
+    
+    return render_template('new-course.html', title="New Course", form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

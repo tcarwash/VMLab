@@ -25,6 +25,9 @@
         {%if current_user.assignments|length > 0%}
         <li><a href="{{ url_for('courses') }}">Courses</a></li>
         {%endif%}
+        {%if current_user.is_teacher()%}
+        <li><a href="{{ url_for('new_course') }}">Create Course</a></li>
+        {%endif%}
         {%if current_user.is_admin()%}
         <li><a href="{{ url_for('admin') }}">Admin</a></li>
         {%endif%}

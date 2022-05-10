@@ -84,6 +84,7 @@ def db_init():
     vmid = VM.query.filter(VM.vm_name=='TestVM').first().id
     db.session.add(Course(course_name="Test Course", course_desc='Learn something, probably', vm_id=vmid))
     db.session.commit()
+    flash('initialized database')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

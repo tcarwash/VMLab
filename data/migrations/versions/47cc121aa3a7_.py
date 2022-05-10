@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: 51e224c2da2b
+Revision ID: 47cc121aa3a7
 Revises: 
-Create Date: 2022-05-06 04:15:07.346479
+Create Date: 2022-05-10 17:22:57.766873
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '51e224c2da2b'
+revision = '47cc121aa3a7'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -52,11 +52,13 @@ def upgrade():
     sa.Column('course_name', sa.String(length=32), nullable=True),
     sa.Column('course_desc', sa.String(length=120), nullable=True),
     sa.Column('vm_id', sa.Integer(), nullable=True),
+    sa.Column('url', sa.String(length=32), nullable=True),
     sa.ForeignKeyConstraint(['vm_id'], ['VM.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_Course_course_desc'), 'Course', ['course_desc'], unique=True)
     op.create_index(op.f('ix_Course_course_name'), 'Course', ['course_name'], unique=True)
+    op.create_index(op.f('ix_Course_url'), 'Course', ['url'], unique=True)
     op.create_table('user_role',
     sa.Column('user', sa.Integer(), nullable=True),
     sa.Column('role', sa.Integer(), nullable=True),
@@ -93,6 +95,7 @@ def downgrade():
     op.drop_index(op.f('ix_Instance_url'), table_name='Instance')
     op.drop_table('Instance')
     op.drop_table('user_role')
+    op.drop_index(op.f('ix_Course_url'), table_name='Course')
     op.drop_index(op.f('ix_Course_course_name'), table_name='Course')
     op.drop_index(op.f('ix_Course_course_desc'), table_name='Course')
     op.drop_table('Course')

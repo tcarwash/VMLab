@@ -22,7 +22,7 @@ class DeleteAssignForm(FlaskForm):
 
 class AssignForm(FlaskForm):
     userid = HiddenField('UserID')
-    course = SelectField('Add Course', choices=[(course.id, course.course_name) for course in Course.query.all()], validators=[DataRequired()])
+    course = SelectField('Add Course', validators=[DataRequired()])
     submit = SubmitField('Add Course')
 
 class RegistrationForm(FlaskForm):

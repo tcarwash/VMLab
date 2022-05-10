@@ -7,7 +7,7 @@ WORKDIR /app
 RUN pip3 install -r requirements.txt
 RUN pip3 install gunicorn
 
-ENV FLASK_APP=vmlab.py
+ENV FLASK_APP=/app/vmlab.py
 
 EXPOSE 5000
 

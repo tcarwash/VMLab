@@ -20,6 +20,7 @@ def courses():
 def admin():
     usereditform = UserEditForm()
     assignform = AssignForm()
+    assignform.course.choices=[(course.id, course.course_name) for course in Course.query.all()]
     deleteform = DeleteAssignForm()
     if deleteform.validate_on_submit() and deleteform.delete.data:
         u = User.query.filter(User.id == deleteform.userid.data).one() 
@@ -85,6 +86,15 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        user = User.query.filter(User.username==form.username.data).first()
+        print(user.id)
+        if user.id == 1:
+            db.session.add(Role(name='admin'))
+            db.session.add(Role(name='student'))
+            db.session.commit()
+            user.roles.append(Role.query.filter(Role.name=='admin').first())
+            db.session.add(user)
+            db.session.commit()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)

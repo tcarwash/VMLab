@@ -1,6 +1,7 @@
-from app import db, app, login
+from app import db, app, login 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
+
 
 @login.user_loader
 def load_user(id):
@@ -21,6 +22,7 @@ user_role = db.Table('user_role',
     db.Column('role', db.Integer, db.ForeignKey('Role.id'))
     )
 
+
 class Role(db.Model):
     __tablename__ = 'Role'
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +34,18 @@ class VM(db.Model):
     vm_name = db.Column(db.String(32), index=True, unique=True)
     vm_desc = db.Column(db.String(120), index=True)
     path = db.Column(db.String(64), index=True)
+
+class Course(db.Model):
+    __tablename__ = 'Course'
+    id = db.Column(db.Integer, primary_key=True)
+    course_name = db.Column(db.String(32), index=True, unique=True)
+    course_desc = db.Column(db.String(120), index=True, unique=True)
+    vm_id = db.Column(db.Integer, db.ForeignKey('VM.id'))
+    users = db.relationship('User', secondary=assignment)
+    url = db.Column(db.String(32), index=True, unique=True)
+
+    def __repr__(self):
+        return '<Course {}>'.format(self.course_name)
 
 class User(UserMixin, db.Model):
     __tablename__ = 'User'
@@ -60,16 +74,6 @@ class User(UserMixin, db.Model):
     def __repr__(self):
         return '<username {}>'.format(self.username)
 
-class Course(db.Model):
-    __tablename__ = 'Course'
-    id = db.Column(db.Integer, primary_key=True)
-    course_name = db.Column(db.String(32), index=True, unique=True)
-    course_desc = db.Column(db.String(120), index=True, unique=True)
-    vm_id = db.Column(db.Integer, db.ForeignKey('VM.id'))
-    users = db.relationship('User', secondary=assignment)
-
-    def __repr__(self):
-        return '<Course {}>'.format(self.course_name)
 
 class Instance(db.Model):
     __tablename__ = 'Instance'
@@ -77,3 +81,4 @@ class Instance(db.Model):
     course_id = db.Column(db.Integer, db.ForeignKey('Course.id'))
     url = db.Column(db.String(32), index=True, unique=True)
     vm = db.relationship("VM", secondary=Course.__table__, primaryjoin="Instance.course_id == Course.id", secondaryjoin="Course.vm_id == VM.id")
+

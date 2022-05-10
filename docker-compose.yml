@@ -11,4 +11,21 @@ services:
       - ./data/:/app/data/
     ports:
       - "8007:5000"
-
+    links:
+      - "db"
+    environment:
+      - DATABASE_URL=mysql+pymysql://vmlab:SecREt@db:3306/vmlab_db
+      - ADMIN_PASS=admin
+    depends_on:
+      - db
+  db:
+    image: mysql:8
+    volumes:
+      - mysql:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=SEcreT
+      - MYSQL_PASSWORD=SecREt
+      - MYSQL_USER=vmlab
+      - MYSQL_DATABASE=vmlab_db
+volumes:
+  mysql:

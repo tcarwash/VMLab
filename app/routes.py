@@ -2,7 +2,7 @@ from app import app, db
 from flask import render_template, flash, redirect, url_for, request
 from app.forms import AssignForm, DeleteAssignForm, LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Role, Course
+from app.models import User, Role, Course, VM
 from werkzeug.urls import url_parse
 
 
@@ -76,6 +76,16 @@ def login():
         return redirect(next_page)
     return render_template('login.html', title='Sign In', form=form)
 
+def db_init():
+    db.session.add(Role(name='student'))
+    db.session.add(Role(name='teacher'))
+    db.session.add(VM(vm_name='TestVM', vm_desc='Ubuntu Probably'))
+    db.session.commit()
+    vmid = VM.query.filter(VM.vm_name=='TestVM').first().id
+    print(vmid)
+    db.session.add(Course(course_name="Test Course", course_desc='Learn something, probably', vm_id=vmid))
+    db.session.commit()
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
@@ -90,11 +100,11 @@ def register():
         print(user.id)
         if user.id == 1:
             db.session.add(Role(name='admin'))
-            db.session.add(Role(name='student'))
             db.session.commit()
             user.roles.append(Role.query.filter(Role.name=='admin').first())
             db.session.add(user)
             db.session.commit()
+            db_init()
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)

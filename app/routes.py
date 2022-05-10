@@ -82,7 +82,6 @@ def db_init():
     db.session.add(VM(vm_name='TestVM', vm_desc='Ubuntu Probably'))
     db.session.commit()
     vmid = VM.query.filter(VM.vm_name=='TestVM').first().id
-    print(vmid)
     db.session.add(Course(course_name="Test Course", course_desc='Learn something, probably', vm_id=vmid))
     db.session.commit()
 

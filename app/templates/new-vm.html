@@ -1,0 +1,23 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Manage VMs</h1>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.vm_name.label }}<br>
+            {{ form.vm_name(size=32) }}<br>
+        </p>
+        <p>
+            {{ form.vm_desc.label }}<br>
+            {{ form.vm_desc(size=64) }}<br>
+        </p>
+        <p>
+            {{ form.path.label }}<br>
+            {{ form.path(size=32) }}<br>
+        </p>
+        <p>{{ form.submit() }}</p>
+    </form>
+{% endblock %}
+

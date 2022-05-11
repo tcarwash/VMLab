@@ -13,4 +13,4 @@ bootstrap = Bootstrap(app)
 login = LoginManager(app)
 login.login_view = 'login'
 
-from app import models, routes, forms
+from app import models, routes, forms, tf

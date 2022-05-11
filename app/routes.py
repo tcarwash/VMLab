@@ -1,6 +1,6 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import AssignForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
+from app.forms import AssignForm, VMForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Role, Course, VM, Instance
 from werkzeug.urls import url_parse
@@ -62,6 +62,7 @@ def logout():
 @app.route('/new-course', methods=['GET', 'POST'])
 def new_course():
     form=CourseForm()
+    courses = [(course.id, course.course_name) for course in Course.query.all()]
     vms = [(vm.id, vm.vm_name) for vm in VM.query.all()]
     form.vm.choices=vms
     if form.validate_on_submit():
@@ -73,9 +74,24 @@ def new_course():
         db.session.add(c)
         db.session.commit()
         flash('Course Added!')
+
         return redirect(url_for('index'))
     
     return render_template('new-course.html', title="New Course", form=form)
+
+@app.route('/new-vm', methods=['GET', 'POST'])
+def new_vm():
+    form = VMForm()
+    vms = [(vm.id, vm.vm_name) for vm in VM.query.all()]
+    if form.validate_on_submit():
+        v = VM(vm_name=form.vm_name.data, vm_desc=form.vm_desc.data, path=form.path.data)
+        db.session.add(v)
+        db.session.commit()
+        flash('VM Added')
+
+        return redirect(url_for('index'))
+
+    return render_template('new-vm.html', title="Manage VMs", form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():

@@ -9,6 +9,7 @@ services:
     volumes:
       - ./app/:/app/app/:ro
       - ./data/:/app/data/
+      - ./tf/:/app/tf/
     ports:
       - "8007:5000"
     links:

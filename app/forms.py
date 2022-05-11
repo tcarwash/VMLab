@@ -24,6 +24,12 @@ class CourseForm(FlaskForm):
     vm = SelectField('VM')
     submit = SubmitField('Submit')
 
+class VMForm(FlaskForm):
+    vm_name = StringField('VM Name', validators=[DataRequired()])
+    vm_desc = StringField('Descrtiption')
+    path = StringField('File Path', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 class DeleteAssignForm(FlaskForm):
     userid = HiddenField("UserID")
     course = HiddenField("CourseID")

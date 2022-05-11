@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField, HiddenField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms.widgets import TextArea
 from app.models import User, Role, Course
 
 class LoginForm(FlaskForm):
@@ -19,7 +20,7 @@ class UserEditForm(FlaskForm):
 class CourseForm(FlaskForm):
     course_name = StringField('Course Name', validators=[DataRequired()])
     course_desc = StringField('Descrtiption')
-    course_text = StringField('Body', validators=[DataRequired()])
+    course_text = StringField('Body', widget=TextArea(), validators=[DataRequired()])
     vm = SelectField('VM')
     submit = SubmitField('Submit')
 

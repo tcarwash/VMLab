@@ -15,11 +15,11 @@
         </p>
         <p>
             {{ form.course_text.label }}<br>
-            {{ form.course_text(size=32) }}<br>
+            {{ form.course_text(cols="32", rows="20") }}<br>
         </p>
         <p>
             {{ form.vm.label }}<br>
-            {{ form.vm(size=32) }}<br>
+            {{ form.vm() }}<br>
         </p>
         <p>{{ form.submit() }}</p>
     </form>

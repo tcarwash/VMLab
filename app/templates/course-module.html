@@ -4,7 +4,7 @@
 
 <h1>{{course.course_name}}</h1>
 <h3>{{course.course_desc}}</h3>
-<p>{{course.course_text}}</p>
+<p>{{text |safe}}</p>
 
 {%for instance in current_user.instances%}
 {%if instance.course_id == course.id%}

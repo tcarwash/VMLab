@@ -4,6 +4,7 @@ from app.forms import AssignForm, DeleteAssignForm, CourseForm, LoginForm, Regis
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Role, Course, VM, Instance
 from werkzeug.urls import url_parse
+from markdown import markdown
 
 
 @app.route('/', methods=['GET'])
@@ -116,8 +117,12 @@ def db_init(user):
 @app.route('/module/<course_id>', methods=['GET'])
 def module(course_id):
     course = Course.query.filter(Course.id==course_id).first()
+    try:
+        text = markdown(course.course_text)
+    except AttributeError:
+        text = course.course_text
 
-    return render_template('course-module.html', course=course, title=course.course_name)
+    return render_template('course-module.html', course=course, text=text, title=course.course_name)
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():

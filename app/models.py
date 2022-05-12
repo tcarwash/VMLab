@@ -1,7 +1,6 @@
 from app import db, app, login 
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-from app.tf import create
 
 
 @login.user_loader
@@ -41,9 +40,10 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(32), index=True, unique=True)
     course_desc = db.Column(db.String(120), index=True)
-    course_text = db.Column(db.String(429000000), index=True)
+    course_text = db.Column(db.String(120), index=True)
     vm_id = db.Column(db.Integer, db.ForeignKey('VM.id'))
     users = db.relationship('User', secondary=assignment)
+    instances = db.relationship("Instance")
 
     def __repr__(self):
         return '<Course {}>'.format(self.course_name)
@@ -84,6 +84,4 @@ class Instance(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('Course.id'))
     url = db.Column(db.String(32), index=True, unique=True)
-    vm = db.relationship("VM", secondary=Course.__table__, primaryjoin="Instance.course_id == Course.id", secondaryjoin="Course.vm_id == VM.id")
-
-
+    vm = db.relationship("VM", backref='instances', secondary=Course.__table__, primaryjoin="Instance.course_id == Course.id", secondaryjoin="Course.vm_id == VM.id")

@@ -24,6 +24,10 @@ class CourseForm(FlaskForm):
     vm = SelectField('VM')
     submit = SubmitField('Submit')
 
+class CourseDeactForm(FlaskForm):
+    course_id = HiddenField('UserID')
+    deact = SubmitField('Deactivate')
+
 class VMForm(FlaskForm):
     vm_name = StringField('VM Name', validators=[DataRequired()])
     vm_desc = StringField('Descrtiption')

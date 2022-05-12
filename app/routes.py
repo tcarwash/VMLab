@@ -1,10 +1,12 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import AssignForm, VMForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
+from app.forms import AssignForm, CourseDeactForm, VMForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import User, Role, Course, VM, Instance
 from werkzeug.urls import url_parse
 from markdown import markdown
+import app.tf as tf
+from sqlalchemy import func
 
 
 @app.route('/', methods=['GET'])
@@ -33,6 +35,11 @@ def admin():
         u = User.query.filter(User.id == assignform.userid.data).one() 
         c = Course.query.filter(Course.id == assignform.course.data).one()
         u.assignments.append(c)
+        vm = VM.query.filter(VM.id == c.vm_id).first()
+        vm_num = db.session.query(func.count(VM.instances)).filter(VM.id == vm.id).scalar() + 1 
+        tf.create(vm.path, vm_num)
+        i = Instance(course_id=c.id, url='https://vm{}.lab.ag7su.com'.format(vm_num))
+        u.instances.append(i)
         db.session.add(u)
         db.session.commit()
     elif usereditform.validate_on_submit() and usereditform.submit.data:
@@ -61,23 +68,30 @@ def logout():
 
 @app.route('/new-course', methods=['GET', 'POST'])
 def new_course():
-    form=CourseForm()
-    courses = [(course.id, course.course_name) for course in Course.query.all()]
+    newcourseform=CourseForm()
+    deactform=CourseDeactForm()
+#    courses = [(course.id, course.course_name) for course in Course.query.all()]
+    courses = Course.query.all()
     vms = [(vm.id, vm.vm_name) for vm in VM.query.all()]
-    form.vm.choices=vms
-    if form.validate_on_submit():
-        c = Course(course_name=form.course_name.data,
-                course_desc=form.course_desc.data,
-                course_text=form.course_text.data,
-                vm_id = form.vm.data
+    newcourseform.vm.choices=vms
+    if newcourseform.validate_on_submit():
+        c = Course(course_name=newcourseform.course_name.data,
+                course_desc=newcourseform.course_desc.data,
+                course_text=newcourseform.course_text.data,
+                vm_id = newcourseform.vm.data
                 )
         db.session.add(c)
         db.session.commit()
         flash('Course Added!')
 
-        return redirect(url_for('index'))
+    if deactform.validate_on_submit():
+        c = Course.query.filter(Course.id == deactform.course_id.data).first()
+        vms = Instance.query.filter(VM.course_id == c.id).one()
+        tf.destroy(VM.query.filter(VM.id == vms.vm_id).one().path)
+        flash('Course Deactivated')
+
     
-    return render_template('new-course.html', title="New Course", form=form)
+    return render_template('new-course.html', title="New Course", courses=courses, deactform=deactform, form=newcourseform)
 
 @app.route('/new-vm', methods=['GET', 'POST'])
 def new_vm():
@@ -118,15 +132,6 @@ def login():
 def db_init(user):
     db.session.add(Role(name='student'))
     db.session.add(Role(name='teacher'))
-    db.session.add(VM(vm_name='TestVM', vm_desc='Ubuntu Probably'))
-    db.session.commit()
-    vmid = VM.query.filter(VM.vm_name=='TestVM').first().id
-    db.session.add(Course(course_name="Test Course", course_desc='Learn something, probably', vm_id=vmid))
-    db.session.commit()
-    db.session.add(Instance(course_id=Course.query.filter(Course.course_name=='Test Course').first().id, url='https://vm1.lab.ag7su.com'))
-    db.session.commit()
-    i = Instance.query.first()
-    user.instances.append(i)
     db.session.commit()
     flash('initialized database')
 

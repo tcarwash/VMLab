@@ -1,0 +1,92 @@
+- name: Creating SSH NAT forward
+  hosts: all
+  tasks:
+  - name: remove firewall rule
+    pfsensible.core.pfsense_rule:
+      name: 'lab ssh'
+      action: pass
+      protocol: tcp
+      interface: wan
+      source: 192.168.1.0/24
+      destination: 10.0.1.0/24
+      state: absent
+  - name: remove old forwards
+    pfsensible.core.pfsense_nat_port_forward:
+      descr: '*lab_ssh'
+      state: absent
+  - name: add firewall rule
+    pfsensible.core.pfsense_rule:
+      name: 'lab ssh'
+      action: pass
+      interface: wan
+      protocol: tcp
+      source: 192.168.1.0/24
+      destination: 10.0.1.0/24
+      destination_port: '{{ ssh_port_range }}'
+      state: present
+  - name: forward ssh port
+    pfsensible.core.pfsense_nat_port_forward:
+      descr: '{{ hostname }} lab_ssh'
+      interface: wan
+      source: any
+      destination: wan:{{ ssh_port }}
+      target: '{{ ip }}:{{ ssh_port }}'
+      associated_rule: none
+      state: present
+- name: Creating TTYD NAT forward
+  hosts: all
+  tasks:
+  - name: remove firewall rule
+    pfsensible.core.pfsense_rule:
+      name: 'lab ttyd'
+      action: pass
+      protocol: tcp
+      interface: wan
+      source: 192.168.1.0/24
+      destination: 10.0.1.0/24
+      state: absent
+  - name: remove old forwards
+    pfsensible.core.pfsense_nat_port_forward:
+      descr: '*lab_ttyd'
+      state: absent
+  - name: add firewall rule
+    pfsensible.core.pfsense_rule:
+      name: 'lab ttyd'
+      action: pass
+      interface: wan
+      protocol: tcp
+      source: 192.168.1.0/24
+      destination: 10.0.1.0/24
+      destination_port: '{{ ttyd_port_range }}'
+      state: present
+  - name: forward ttyd port
+    pfsensible.core.pfsense_nat_port_forward:
+      descr: '{{ hostname }} lab_ttyd'
+      interface: wan
+      source: any
+      destination: wan:{{ ttyd_port }}
+      target: '{{ ip }}:{{ ttyd_port }}'
+      associated_rule: none
+      state: present
+- name: haproxy setup
+  hosts: all
+  tasks:
+  - name: ensure backend
+    pfsensible.core.pfsense_haproxy_backend:
+      name: labvm
+      balance: uri
+      httpcheck_method: GET
+      state: present
+  - name: remove old server
+    pfsensible.core.pfsense_haproxy_backend_server:
+      backend: labvm
+      name: '{{ hostname }}'
+      state: absent
+  - name: add server
+    pfsensible.core.pfsense_haproxy_backend_server:
+      backend: labvm
+      name: "{{ hostname }}"
+      address: carr-lab2.home
+      port: "{{ ttyd_port }}"
+      state: present
+

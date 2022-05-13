@@ -1,0 +1,15 @@
+[Unit]
+Description=ttyd service
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User={{ user }}
+WorkingDirectory=/home/{{ user }}
+ExecStart=/usr/local/bin/ttyd -c {{ user }}:{{ passwd }} -p {{ ttyd_port }} /bin/bash
+
+[Install]
+WantedBy=multi-user.target

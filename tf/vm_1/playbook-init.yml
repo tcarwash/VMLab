@@ -1,0 +1,71 @@
+- name: Creating user with admin access
+  hosts: all
+  tasks:
+  - name: set hostname
+    ansible.builtin.hostname:
+      name: "{{ hostname }}"
+  - name: Creating Group
+    group:
+      name: sudo
+  - name: Creating User
+    user: 
+      name: tyler 
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+      groups: sudo
+      append: yes
+  - name: Creating VM User
+    user: 
+      name: "vm{{ vm_id }}user" 
+      generate_ssh_key: yes
+      ssh_key_bits: 2048
+      ssh_key_file: .ssh/id_rsa
+      password: "{{ ( 'vm' + vm_id + 'pass' + pmx_id[-1] ) | password_hash('sha512') }}"
+      groups: sudo
+      append: yes
+- name: Configuring SSH
+  hosts: all
+  vars:
+    ssh_port: "{{ ssh_port }}"
+  tasks:
+  - name: Add keys
+    template: src=../ssh/authorized_keys dest=/home/tyler/.ssh/authorized_keys
+  - name: ensure root/.ssh
+    file: path=/root/.ssh state=directory
+  - name: Add keys Root
+    template: src=../ssh/authorized_keys dest=/root/.ssh/authorized_keys
+  - name: Copy ssh config
+    template: src=sshd_config dest=/etc/ssh/sshd_config
+  - name: Restart sshd
+    systemd:
+      name: sshd.service
+      state: restarted
+- name: Configure TTYD
+  hosts: all
+  vars:
+    user: "vm{{ vm_id }}user"
+    passwd: "vm{{ vm_id }}pass{{ pmx_id[-1] }}"
+  tasks:
+  - name: Install ttyd service
+    template: src=./ttyd.service dest=/etc/systemd/system/ttyd.service
+  - name: start ttyd service
+    systemd:
+      name: ttyd.service
+      enabled: yes
+      state: started
+- name: Output info
+  hosts: all
+  vars:
+    user: "vm{{ vm_id }}user"
+    passwd: "vm{{ vm_id }}pass{{ pmx_id[-1] }}"
+    pattern: |
+      {{ hostname }}
+      {{ ip }}
+      {{ user }}
+      {{ passwd }}
+      ------
+  serial: 1
+  tasks:
+  - local_action: lineinfile line={{ pattern }} insertafter=EOF dest=./host-info
+    

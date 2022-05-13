@@ -67,13 +67,17 @@ def logout():
     return redirect(url_for('index'))
 
 def purge_vms(course):
-    try:
-        if len(course.instances) > 0:
-            db.session.delete(course.instances)
-            db.session.commit()
-            tf.destroy(VM.query.filter(VM.id == course.vm_id).one().path)
-    except:
-        pass
+    if len(course.instances) > 0:
+        for u in User.query.all():
+            for i in Instance.query.filter(Instance.course_id == course.id).all():
+                u.instances.remove(i)
+        Instance.query.filter(Instance.course_id == course.id).delete()
+        db.session.commit()
+        tf.destroy(VM.query.filter(VM.id == course.vm_id).one().path)
+        
+        return True
+    else:
+        return False
 
 @app.route('/new-course', methods=['GET', 'POST'])
 @login_required
@@ -94,13 +98,11 @@ def new_course():
         flash('Course Added!')
     elif delform.validate_on_submit():
         c = Course.query.filter(Course.id == delform.course_id.data).first()
-        try:
+        if c:
+            purge_vms(c)
             db.session.delete(c)
             db.session.commit()
-            purge_vms(c)
-        except:
-            pass
-        flash('Course Deleted')
+            flash('Course Deleted')
     elif deactform.validate_on_submit():
         c = Course.query.filter(Course.id == deactform.course_id.data).first()
         purge_vms(c)

@@ -1,12 +1,12 @@
 from app import app, db
 from flask import render_template, flash, redirect, url_for, request
-from app.forms import AssignForm, CourseDeactForm, VMForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
+from app.forms import AssignForm, CourseDelForm, CourseDeactForm, VMForm, DeleteAssignForm, CourseForm, LoginForm, RegistrationForm, UserEditForm
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import User, Role, Course, VM, Instance
+from app.models import User, Role, Course, VM, Instance, user_instance
 from werkzeug.urls import url_parse
 from markdown import markdown
 import app.tf as tf
-from sqlalchemy import func
+from sqlalchemy import func, delete
 
 
 @app.route('/', methods=['GET'])
@@ -66,12 +66,21 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+def purge_vms(course):
+    try:
+        if len(course.instances) > 0:
+            db.session.delete(course.instances)
+            db.session.commit()
+            tf.destroy(VM.query.filter(VM.id == course.vm_id).one().path)
+    except:
+        pass
+
 @app.route('/new-course', methods=['GET', 'POST'])
+@login_required
 def new_course():
     newcourseform=CourseForm()
     deactform=CourseDeactForm()
-#    courses = [(course.id, course.course_name) for course in Course.query.all()]
-    courses = Course.query.all()
+    delform=CourseDelForm()
     vms = [(vm.id, vm.vm_name) for vm in VM.query.all()]
     newcourseform.vm.choices=vms
     if newcourseform.validate_on_submit():
@@ -83,17 +92,26 @@ def new_course():
         db.session.add(c)
         db.session.commit()
         flash('Course Added!')
-
-    if deactform.validate_on_submit():
+    elif delform.validate_on_submit():
+        c = Course.query.filter(Course.id == delform.course_id.data).first()
+        try:
+            db.session.delete(c)
+            db.session.commit()
+            purge_vms(c)
+        except:
+            pass
+        flash('Course Deleted')
+    elif deactform.validate_on_submit():
         c = Course.query.filter(Course.id == deactform.course_id.data).first()
-        vms = Instance.query.filter(VM.course_id == c.id).one()
-        tf.destroy(VM.query.filter(VM.id == vms.vm_id).one().path)
+        purge_vms(c)
         flash('Course Deactivated')
 
+    courses = Course.query.all()
     
-    return render_template('new-course.html', title="New Course", courses=courses, deactform=deactform, form=newcourseform)
+    return render_template('new-course.html', title="New Course", delform=delform, courses=courses, deactform=deactform, form=newcourseform)
 
 @app.route('/new-vm', methods=['GET', 'POST'])
+@login_required
 def new_vm():
     form = VMForm()
     vms = [(vm.id, vm.vm_name) for vm in VM.query.all()]
@@ -136,6 +154,7 @@ def db_init(user):
     flash('initialized database')
 
 @app.route('/module/<course_id>', methods=['GET'])
+@login_required
 def module(course_id):
     course = Course.query.filter(Course.id==course_id).first()
     try:

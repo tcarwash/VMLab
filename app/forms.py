@@ -19,18 +19,22 @@ class UserEditForm(FlaskForm):
     
 class CourseForm(FlaskForm):
     course_name = StringField('Course Name', validators=[DataRequired()])
-    course_desc = StringField('Descrtiption')
+    course_desc = StringField('Description')
     course_text = StringField('Body', widget=TextArea(), validators=[DataRequired()])
     vm = SelectField('VM')
     submit = SubmitField('Submit')
 
 class CourseDeactForm(FlaskForm):
-    course_id = HiddenField('UserID')
+    course_id = HiddenField('CourseID')
     deact = SubmitField('Deactivate')
+    
+class CourseDelForm(FlaskForm):
+    course_id = HiddenField("CourseID")
+    delete = SubmitField('Delete')
 
 class VMForm(FlaskForm):
     vm_name = StringField('VM Name', validators=[DataRequired()])
-    vm_desc = StringField('Descrtiption')
+    vm_desc = StringField('Description')
     path = StringField('File Path', validators=[DataRequired()])
     submit = SubmitField('Submit')
 

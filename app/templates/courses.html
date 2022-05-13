@@ -9,13 +9,11 @@
     {%for course in current_user.assignments%}
     <tr><td><a href={{url_for('module', course_id=course.id)}}>{{course.course_name}}</a></td>
     <td>
-    {%for instance in current_user.instances%}
-    {%if instance.course_id == course.id%}
+    {%if course.instances|length > 0%}
     Active
     {%else%}
     Inactive
     {%endif%}
-    {%endfor%}
     </td>
     </tr>
     {%endfor%}

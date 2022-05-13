@@ -22,7 +22,6 @@ user_role = db.Table('user_role',
     db.Column('role', db.Integer, db.ForeignKey('Role.id'))
     )
 
-
 class Role(db.Model):
     __tablename__ = 'Role'
     id = db.Column(db.Integer, primary_key=True)
@@ -83,5 +82,5 @@ class Instance(db.Model):
     __tablename__ = 'Instance'
     id = db.Column(db.Integer, primary_key=True)
     course_id = db.Column(db.Integer, db.ForeignKey('Course.id'))
-    url = db.Column(db.String(32), index=True, unique=True)
+    url = db.Column(db.String(32), unique=True)
     vm = db.relationship("VM", backref='instances', secondary=Course.__table__, primaryjoin="Instance.course_id == Course.id", secondaryjoin="Course.vm_id == VM.id")

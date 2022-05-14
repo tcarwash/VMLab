@@ -40,7 +40,7 @@ class Course(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     course_name = db.Column(db.String(32), index=True, unique=True)
     course_desc = db.Column(db.String(120), index=True)
-    course_text = db.Column(db.String(120), index=True)
+    course_text = db.Column(db.String(4294000000), index=True)
     vm_id = db.Column(db.Integer, db.ForeignKey('VM.id'))
     users = db.relationship('User', secondary=assignment)
 

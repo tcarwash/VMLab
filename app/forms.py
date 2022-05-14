@@ -31,6 +31,10 @@ class CourseDeactForm(FlaskForm):
 class CourseDelForm(FlaskForm):
     course_id = HiddenField("CourseID")
     delete = SubmitField('Delete')
+    
+class VMDelForm(FlaskForm):
+    vm_id = HiddenField("VMID")
+    delete = SubmitField('Delete')
 
 class VMForm(FlaskForm):
     vm_name = StringField('VM Name', validators=[DataRequired()])

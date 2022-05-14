@@ -19,5 +19,23 @@
         </p>
         <p>{{ form.submit() }}</p>
     </form>
+    <p>
+    <table class="table table-hover">
+    {%for vm in vms%}
+    <tr>
+    <td>{{vm.vm_name}}</td>
+    <td>{{vm.vm_desc}}</td>
+    <td>{{vm.path}}</td>
+    <td>
+    <form action="" method="post">
+    {{delform.csrf_token()}}
+    {{delform.vm_id(value=vm.id)}}
+    {{delform.delete()}}
+    </form>
+    </td>
+    </tr>
+    {%endfor%}
+    </table>
+    </p>
 {% endblock %}
 

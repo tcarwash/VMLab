@@ -17,6 +17,9 @@ services:
     environment:
       - DATABASE_URL=mysql+pymysql://vmlab:SecREt@db:3306/vmlab_db
       - ADMIN_PASS=admin
+      - PM_USER="terraform-prov@pve"
+      - PM_PASS="terraformuser"
+ 
     depends_on:
       - db
   db:

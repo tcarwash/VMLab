@@ -1,12 +1,21 @@
+# python
 venv/*
 *.pyc
 __pycache__/*
 
+
+# database stuff
 data/*
 data.bak/*
+
+
+# production stuff
+docker-compose_prod.yml
 tf/ssh/id_rsa
 
-docker-compose_prod.yml
+
+# terraform providers etc
+*/.terraform/*
 
 clean.sh
 

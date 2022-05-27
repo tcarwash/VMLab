@@ -4,7 +4,9 @@ __pycache__/*
 
 data/*
 data.bak/*
-tf/ssh/authorized_keys
+tf/ssh/id_rsa
+
+docker-compose_prod.yml
 
 clean.sh
 

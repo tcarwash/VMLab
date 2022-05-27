@@ -41,13 +41,13 @@ resource "proxmox_vm_qemu" "worker" {
   }
   provisioner "remote-exec" {inline = ["ls",]}
   provisioner "local-exec" {
-    command ="ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root --key-file "/app/tf/ssh/id_rsa" --extra-vars='port_len=${var.vm_num} hostname=${self.name} vm_id=${each.value + 1} pmx_id=${element(split("//", self.id), length(split("//", self.id))-1)} ip=${self.default_ipv4_address} ssh_port=22${format("%02d", each.value + 1)} ttyd_port=30${format("%02d", each.value + 1)}' --ssh-extra-args='-J tyler@carr-lab2.home' -i '${self.default_ipv4_address},'  playbook-init.yml"
+    command ="ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root --key-file="//app//tf//ssh//id_rsa" --extra-vars='port_len=${var.vm_num} hostname=${self.name} vm_id=${each.value + 1} pmx_id=${element(split("//", self.id), length(split("//", self.id))-1)} ip=${self.default_ipv4_address} ssh_port=22${format("%02d", each.value + 1)} ttyd_port=30${format("%02d", each.value + 1)}' --ssh-extra-args='-J tyler@carr-lab2.home' -i '${self.default_ipv4_address},' playbook-init.yml"
   }
   provisioner "local-exec" {
-    command ="ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root --key-file "/app/tf/ssh/id_rsa" --extra-vars='ttyd_port_range=3001-${3000 + var.vm_num} ssh_port_range=2201-${2200 + var.vm_num} hostname=${self.name} ip=${self.default_ipv4_address} vm_id=${each.value + 1} ttyd_port=30${format("%02d", each.value + 1)} ssh_port=22${format("%02d", each.value + 1)}' -i '192.168.1.203,' --ssh-extra-args='-p 2200' playbook-post.yml"
+    command ="ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root --key-file="//app//tf//ssh//id_rsa" --extra-vars='ttyd_port_range=3001-${3000 + var.vm_num} ssh_port_range=2201-${2200 + var.vm_num} hostname=${self.name} ip=${self.default_ipv4_address} vm_id=${each.value + 1} ttyd_port=30${format("%02d", each.value + 1)} ssh_port=22${format("%02d", each.value + 1)}' -i '192.168.1.203,' --ssh-extra-args='-p 2200' playbook-post.yml"
   }
   provisioner "local-exec" {
-    command ="ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root --key-file "/app/tf/ssh/id_rsa" --extra-vars='ttyd_port_range=3001-${3000 + var.vm_num} ssh_port_range=2201-${2200 + var.vm_num} hostname=${self.name} ip=${self.default_ipv4_address} vm_id=${each.value + 1} ttyd_port=30${format("%02d", each.value + 1)} ssh_port=22${format("%02d", each.value + 1)}' -i '192.168.1.1,' playbook-haproxy.yml"
+    command ="ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -u root --key-file="//app//tf//ssh//id_rsa" --extra-vars='ttyd_port_range=3001-${3000 + var.vm_num} ssh_port_range=2201-${2200 + var.vm_num} hostname=${self.name} ip=${self.default_ipv4_address} vm_id=${each.value + 1} ttyd_port=30${format("%02d", each.value + 1)} ssh_port=22${format("%02d", each.value + 1)}' -i '192.168.1.1,' playbook-haproxy.yml"
   }
 #  provisioner "remote-exec" {inline = ["shutdown -r now",]}
 }

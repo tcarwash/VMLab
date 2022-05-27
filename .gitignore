@@ -15,7 +15,12 @@ tf/ssh/id_rsa
 
 
 # terraform providers etc
-*/.terraform/*
+tf/*/.terraform/*
+.terraform.lock.hcl
+terraform.tfstate
+
+# vim swap
+*.swp
 
 clean.sh
 

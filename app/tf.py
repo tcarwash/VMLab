@@ -2,7 +2,7 @@ import subprocess
 
 
 def create(path, num):
-    cmd = ['/usr/bin/terraform', 'apply', "--var=vm_num={}".format(num)]
+    cmd = ['/usr/bin/terraform', 'apply', "--var=vm_num={}".format(num), "--auto-approve"]
     proc = subprocess.Popen(cmd, universal_newlines=True, cwd='/app/tf/' + path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout_value = proc.communicate()[0]
     print('\tstdout: {}'.format(stdout_value))

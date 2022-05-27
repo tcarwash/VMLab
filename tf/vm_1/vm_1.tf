@@ -1,4 +1,4 @@
-terraform {
+form {
   required_providers {
     proxmox = {
       source = "telmate/proxmox"

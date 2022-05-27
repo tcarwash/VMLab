@@ -124,8 +124,7 @@ def new_vm():
         flash('VM Added')
 
     elif delform.validate_on_submit():
-        vm = VM.query.filter(VM.id == delform.vm_id.data).first()
-        db.session.delete(vm)
+        db.session.delete(VM.query.filter(VM.id == delform.vm_id.data).first())
         db.session.commit()
 
     return render_template('new-vm.html', title="Manage VMs", vms=VM.query.all(), delform=delform, form=form)

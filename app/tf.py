@@ -15,7 +15,7 @@ def create(path, num):
 
 
 def destroy(path):
-     proc = subprocess.Popen(['/usr/bin/terraform', 'destroy'], cwd='/app/tf/' + path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(['/usr/bin/terraform', 'destroy'], cwd='/app/tf/' + path, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = proc.communicate()
 
     return_code = proc.poll()
